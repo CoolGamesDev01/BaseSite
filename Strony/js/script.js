@@ -81,22 +81,29 @@ function formatPhoneNumber(input) {
     input.value = value;
 }
 
-// Image lazy loading
+// Project filtering
 document.addEventListener('DOMContentLoaded', function() {
-    const images = document.querySelectorAll('img[data-src]');
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const projects = document.querySelectorAll('.project-item');
     
-    const imageObserver = new IntersectionObserver((entries, observer) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const img = entry.target;
-                img.src = img.dataset.src;
-                img.classList.remove('lazy');
-                imageObserver.unobserve(img);
-            }
+    filterButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            // Remove active class from all buttons
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            // Add active class to clicked button
+            button.classList.add('active');
+            
+            const filter = button.getAttribute('data-filter');
+            
+            projects.forEach(project => {
+                if (filter === 'all' || project.getAttribute('data-category') === filter) {
+                    project.style.display = 'block';
+                } else {
+                    project.style.display = 'none';
+                }
+            });
         });
     });
-    
-    images.forEach(img => imageObserver.observe(img));
 });
 
 // Contact form submission
@@ -115,37 +122,6 @@ function handleContactForm(event) {
     // For now, we'll just show a success message
     alert('Dziękujemy za wiadomość! Skontaktujemy się w najbliższym czasie.');
     form.reset();
-}
-
-// Gallery lightbox functionality
-function initGallery() {
-    const galleryImages = document.querySelectorAll('.gallery-image');
-    
-    galleryImages.forEach(img => {
-        img.addEventListener('click', function() {
-            const lightbox = document.createElement('div');
-            lightbox.className = 'lightbox';
-            lightbox.innerHTML = `
-                <div class="lightbox-content">
-                    <img src="${this.src}" alt="${this.alt}">
-                    <button class="lightbox-close">&times;</button>
-                </div>
-            `;
-            document.body.appendChild(lightbox);
-            
-            // Close lightbox
-            lightbox.addEventListener('click', function(e) {
-                if (e.target === lightbox || e.target.classList.contains('lightbox-close')) {
-                    document.body.removeChild(lightbox);
-                }
-            });
-        });
-    });
-}
-
-// Initialize gallery if gallery page is loaded
-if (document.querySelector('.gallery-grid')) {
-    initGallery();
 }
 
 // Back to top button
